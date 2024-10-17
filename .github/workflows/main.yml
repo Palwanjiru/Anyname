@@ -1,0 +1,36 @@
+
+name: Flutter Build
+
+on:
+  push:
+    branches:
+      • main
+  pull_request:
+    branches:
+      • main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.5'
+
+      • name: Install dependencies
+        run: flutter pub get
+
+      • name: Build APK for arm64
+        run: flutter build apk --target-platform android-arm64
+
+      • name: Build APK for armv7
+        run: flutter build apk --target-platform android-arm
+
+      # Add more steps as needed for your specific use case
+      
