@@ -45,4 +45,4 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: libflutter_so_armeabi_v7a
-          path: flutter_so/build/app/intermediates/merged_native_libs/release/out/lib/armeabi-v7a/libflutter.so
+          path: flutter_so/build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib/armeabi-v7a/libflutter.so
