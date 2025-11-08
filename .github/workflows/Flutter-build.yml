@@ -24,7 +24,7 @@ jobs:
       - name: Print Flutter version
         run: flutter --version
 
-      - name: Create  Flutter project
+      - name: Create Flutter project
         run: |
           flutter create flutter_so
           cd flutter_so
@@ -35,15 +35,25 @@ jobs:
           cd flutter_so
           flutter build apk --release --target-platform android-arm,android-arm64
 
-      - name: Upload libflutter.so for arm64
-        uses: actions/upload-artifact@v4
-        with:
-          name: libflutter_so_arm64
-          path: flutter_so/build/app/intermediates/merged_native_libs/release/out/lib/arm64-v8a/libflutter.so
+      # Debug step to find the correct paths
+      - name: Find libflutter.so files
+        run: |
+          find flutter_so -name "libflutter.so" -type f | head -20
+          echo "=== Checking common paths ==="
+          ls -la flutter_so/build/app/intermediates/ || echo "No intermediates dir"
+          ls -la flutter_so/build/app/intermediates/*/release/out/lib/ 2>/dev/null || echo "No lib directories found"
 
-      - name: Upload libflutter.so for armeabi-v7a
+      # Try multiple possible paths for Flutter 3.35.2
+      - name: Upload libflutter.so artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: libflutter_so_armeabi_v7a
-          path: flutter_so/build/app/intermediates/merged_native_libs/release/out/lib/armeabi-v7a/libflutter.so
-          
+          name: libflutter-so-files
+          path: |
+            flutter_so/build/app/intermediates/merged_native_libs/release/out/lib/arm64-v8a/libflutter.so
+            flutter_so/build/app/intermediates/merged_native_libs/release/out/lib/armeabi-v7a/libflutter.so
+            flutter_so/build/app/intermediates/stripped_native_libs/release/out/lib/arm64-v8a/libflutter.so
+            flutter_so/build/app/intermediates/stripped_native_libs/release/out/lib/armeabi-v7a/libflutter.so
+            flutter_so/build/app/intermediates/merged_jni_libs/release/out/lib/arm64-v8a/libflutter.so
+            flutter_so/build/app/intermediates/merged_jni_libs/release/out/lib/armeabi-v7a/libflutter.so
+          if-no-files-found: warn
+          retention-days: 30
